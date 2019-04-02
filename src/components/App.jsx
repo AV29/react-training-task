@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import YourComponent from './YourComponent';
-import './AdjacentCalc.less';
 
 class App extends Component {
     constructor(props) {

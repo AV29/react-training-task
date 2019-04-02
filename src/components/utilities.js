@@ -28,3 +28,16 @@ export function findMaxAdjacent(data, lim) {
 }
 
 export const getRandomValue = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+export const getMatrix = (size) => {
+  const arr = [];
+
+  for (let i = 0; i < size; i += 1) {
+    arr[i] = [];
+
+    for (let j = 0; j < size; j += 1) {
+        arr[i][j] = getRandomValue(1, 99);
+    }
+  }
+  return arr;
+}
