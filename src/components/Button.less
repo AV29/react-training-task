@@ -1,11 +1,24 @@
 .button {
     width: 24px;
     height: 24px;
+    display: block;
+    position: relative;
+    border: 1px solid #288dc8;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: initial;
+    }
+}
+
+.classButton {
     border-radius: 50%;
     background-color: #fff;
     border: 3px solid #288dc8;
-    display: block;
-    position: relative;
     transform: rotate(0deg);
     transition: transform 0.5s;
 
@@ -35,11 +48,9 @@
 
     &:hover {
         transform: rotate(45deg);
-        cursor: pointer;
     }
+
     &:disabled {
-        opacity: 0.5;
         transform: rotate(0deg);
-        cursor: initial;
     }
 }

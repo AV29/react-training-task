@@ -1,38 +1,31 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import './Input.less';
+import React from "react";
+import {bool, func, number, string} from "prop-types";
+import "./Input.less";
 
-class Input extends Component {
-    constructor(props) {
-        super(props);
-    }
+function Input({ forLabel, classLabel, textLabel, isInvalid, classError, textError, classInput, ...props }) {
 
-    handleChange = (e) => {
-        this.props.onChange(Number(e.target.value));
-    }
-    
-    render() {
-        const { type, value, id, min, disabled } = this.props;
-
-        return (
-            <input
-                className="input"
-                type={type}
-                value={value}
-                id={id}
-                min={min}
-                disabled={disabled}
-                onChange={this.handleChange}
-            />
-        );
-    }
+    return (
+        <div className="control-input">
+            <label htmlFor={forLabel} className={`label${classLabel ? ` ${classLabel}` : ""}`}>{textLabel}</label>
+            <input {...props} className={`input${classInput ? ` ${classInput}` : ""}`} id={forLabel} />
+            {isInvalid ? <div className={`error${classError ? ` ${classError}` : ""}`}>{textError}</div> : <div/>}
+        </div>
+    );
 }
 
 Input.propTypes = {
-    type: PropTypes.string,
-    id: PropTypes.string,
-    disabled: PropTypes.bool,
-    onChange: PropTypes.func
+    type: string.isRequired,
+    disabled: bool.isRequired,
+    onChange: func.isRequired,
+    value: number.isRequired,
+    classLabel: string,
+    classInput: string,
+    classError: string,
+    forLabel: string,
+    textLabel: string,
+    min: number,
+    isInvalid: bool,
+    textError: string
 };
 
 export default Input;

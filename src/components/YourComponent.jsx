@@ -1,89 +1,98 @@
-import React, {Component} from 'react';
-import Label from './Label';
-import Input from './Input';
-import Error from './Error';
-import Button from './Button';
-import Matrix from './Matrix';
-import { findMaxAdjacent, getMatrix } from './utilities';
-import './YourComponent.less';
+import React, {Component} from "react";
+import Input from "./Input";
+import Button from "./Button";
+import Matrix from "./Matrix";
+import {connect} from "react-redux";
+import "./YourComponent.less";
+import * as ActionCreators from "../actions/actions";
 
 class YourComponent extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            size: 5,
-            limit: 5,
-            matrix: getMatrix(5),
-            maxSize: 20
-        }
+    handleChangeSize = (e) => {
+        const size = Number(e.target.value);
+        this.props.updateSize(size);
+        this.props.updateMatrix();
+        this.props.recalculateResultAndIndexes();
     }
 
-    handleChangeSize = (size) => {
-        this.setState({
-            size: size,
-            matrix: getMatrix(size)
-        });
-    }
-
-    handleChangeLimit = (limit) => {
-        this.setState({
-            limit: limit
-        });
+    handleChangeLimit = (e) => {
+        const limit = Number(e.target.value);
+        this.props.updateLimit(limit);
+        this.props.recalculateResultAndIndexes();
     }
 
     handleRefreshMatrix = () => {
-        this.setState({
-            matrix: getMatrix(this.state.size)
-        });
+        this.props.updateMatrix();
+        this.props.recalculateResultAndIndexes();
     }
 
     render() {
-        const { size, limit, maxSize, matrix } = this.state;
-        const resAndIndexes = findMaxAdjacent(matrix, limit);
-        const { res, indexes } = resAndIndexes;
+        const { size, limit, maxSize, matrix, resultAndIndexes: {res, indexes} } = this.props;
+        const isInvalidSettings = size > maxSize || limit > size;
 
         return (
-            <div className="yourComponent-wrapper">
-                <div className="yourComponent-controls">
-                    <div className="control-input">
-                        <Label forControl="size" text="Size" />
-                        <Input
-                            type="number"
-                            id="size"
-                            min={1}
-                            disabled={limit > size}
-                            onChange={this.handleChangeSize}
-                            value={size} />
-                        {size > maxSize || limit > size ? <Error text={"should be in range of " + limit + " - " + maxSize}/> : <div/>}
-                    </div>
+            <div className="component-wrapper">
+                <div className="component-controls">
+                    <Input
+                        classLabel="classLabel"
+                        classInput="classInput"
+                        classError="classError"
+                        type="number"
+                        forLabel="size"
+                        textLabel="Size"
+                        min={1}
+                        value={size}
+                        disabled={limit > size}
+                        onChange={this.handleChangeSize}
+                        isInvalid={isInvalidSettings}
+                        textError={`should be in range of ${limit > maxSize ? "1" : limit} - ${maxSize}`}/>
+                    <Input
+                        classLabel="classLabel"
+                        classInput="classInput"
+                        classError="classError"
+                        type="number"
+                        forLabel="limit"
+                        textLabel="Limit"
+                        min={1}
+                        value={limit}
+                        disabled={size > maxSize}
+                        onChange={this.handleChangeLimit}
+                        isInvalid={limit > size}
+                        textError={`can't be more than ${size}`}/>
 
-                    <div className="control-input">
-                        <Label forControl="limit" text="Limit" />
-                        <Input
-                            type="number"
-                            id="limit"
-                            min={1}
-                            disabled={size > maxSize}
-                            onChange={this.handleChangeLimit}
-                            value={limit} />
-                        {limit > size ? <Error text={"can't be more than " + size}/> : <div/>}
-                    </div>
                     <div className="block-result">Result: {res}</div>
                     <div className="control-button">
                         <Button
-                            disabled={ size > maxSize || limit > size }
-                            onClick={this.handleRefreshMatrix} />
+                            disabled={isInvalidSettings}
+                            onClick={this.handleRefreshMatrix}
+                            classButton="classButton"/>
                     </div>
                 </div>
                 <Matrix
                     matrix={matrix}
                     indexes={indexes}
-                    disabled={size > maxSize || limit > size}
-                />
+                    disabled={isInvalidSettings}/>
             </div>
         );
     }
 }
 
-export default YourComponent;
+function mapStateToProps(state) {
+    return {
+        size: state.size,
+        maxSize: state.maxSize,
+        matrix: state.matrix,
+        limit: state.limit,
+        resultAndIndexes: state.resultAndIndexes
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        updateSize: (size) => dispatch(ActionCreators.updateSize(size)),
+        updateLimit: (limit) => dispatch(ActionCreators.updateLimit(limit)),
+        updateMatrix: () => dispatch(ActionCreators.updateMatrix()),
+        recalculateResultAndIndexes: () => dispatch(ActionCreators.recalculateResultAndIndexes())
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(YourComponent);

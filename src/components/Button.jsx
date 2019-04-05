@@ -1,18 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import {bool, func, string} from 'prop-types';
 import './Button.less';
 
-function Button (props) {
-    const { disabled, onClick } = props;
-
+function Button ({ text, classButton, ...props }) {
     return (
-        <button className="button" disabled={disabled} onClick={onClick} />
+        <button className={`button${classButton ? ` ${classButton}` : ''}`} {...props} >{text}</button>
     );
 }
 
 Button.propTypes = {
-    disabled: PropTypes.bool,
-    onClick: PropTypes.func
+    disabled: bool.isRequired,
+    onClick: func.isRequired,
+    classButton: string
 };
 
 export default Button;
